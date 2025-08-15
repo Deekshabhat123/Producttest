@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieDB - Your Ultimate Movie Destination</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'navy': '#0B1426',
+                        'charcoal': '#1A1D29',
+                        'card-dark': '#1E293B',
+                    },
+                    backdropBlur: {
+                        'xs': '2px',
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .movie-card:hover {
+            transform: scale(1.05);
+            transition: transform 0.3s ease;
+        }
+        .cast-card:hover {
+            transform: translateY(-8px);
+            transition: transform 0.3s ease;
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #0B1426 0%, #1A1D29 100%);
+        }
+    </style>
+</head>
+<body class="bg-navy text-white">
+    <!-- @COMPONENT: Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass-card">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                            MovieDB
+                        </h1>
+                    </div>
+                    <div class="hidden md:block ml-10">
+                        <div class="flex items-baseline space-x-4">
+                            <button class="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors" data-page="popular">
+                                Popular
+                            </button>
+                            <button class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors" data-page="top-rated">
+                                Top Rated
+                            </button>
+                            <button class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors" data-page="upcoming">
+                                Upcoming
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Search movies..." 
+                               class="w-64 px-4 py-2 bg-card-dark/50 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-colors"
+                               id="searchInput">
+                        <button class="absolute right-3 top-2.5 text-gray-400 hover:text-white transition-colors">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <button class="md:hidden text-white">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- @END_COMPONENT: Navigation -->
+
+    <div class="pt-16">
+        <!-- @COMPONENT: PopularMoviesPage -->
+        <div id="popular-page" class="page-content">
+            <!-- Hero Section -->
+            <section class="hero-gradient py-20">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center">
+                        <h1 class="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                            Popular Movies
+                        </h1>
+                        <p class="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
+                            Discover the most popular and trending movies loved by millions of viewers worldwide
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Movies Grid -->
+            <section class="py-16">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <!-- @MAP: popularMovies.map(movie => ( -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-12" id="movies-grid">
+                        <!-- Movie Card 1 -->
+                        <div class="movie-card cursor-pointer" data-movie-id="502356">
+                            <div class="glass-card rounded-xl overflow-hidden">
+                                <!-- Poster of The Super Mario Bros. Movie showing Mario and Luigi in colorful animation -->
+                                <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=600" 
+                                     alt="Movie Poster" class="w-full h-80 object-cover">
+                                <div class="p-4">
+                                    <h3 class="font-semibold text-lg mb-2 truncate" data-bind="movie.title">The Super Mario Bros. Movie</h3>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-1 text-yellow-400">
+                                            <i class="fas fa-star text-sm"></i>
+                                            <span class="text-sm font-medium" data-bind="movie.vote_average">7.8</span>
+                                        </div>
+                                        <span class="text-xs text-gray-400" data-bind="movie.release_date">2023</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Movie Card 2 -->
+                        <div class="movie-card cursor-pointer" data-movie-id="640146">
+                            <div class="glass-card rounded-xl overflow-hidden">
+                                <!-- Poster showing Ant-Man character in dynamic action pose with quantum realm effects -->
+                                <img src="https://pixabay.com/get/gd18f4bda452365f68f13b7066879c68fe40c289996c30abcdf02a311adb685d453162f80d639b392e2fb1f6868561de141de5bc3b93bd0737c485aa57c680fc3_1280.jpg" 
+                                     alt="Movie Poster" class="w-full h-80 object-cover">
+                                <div class="p-4">
+                                    <h3 class="font-semibold text-lg mb-2 truncate" data-bind="movie.title">Ant-Man and the Wasp: Quantumania</h3>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-1 text-yellow-400">
+                                            <i class="fas fa-star text-sm"></i>
+                                            <span class="text-sm font-medium" data-bind="movie.vote_average">6.4</span>
+                                        </div>
+                                        <span class="text-xs text-gray-400" data-bind="movie.release_date">2023</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Movie Card 3 -->
+                        <div class="movie-card cursor-pointer" data-movie-id="758323">
+                            <div class="glass-card rounded-xl overflow-hidden">
+                                <!-- Dark movie poster featuring The Pope's Exorcist with horror atmosphere -->
+                                <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=600" 
+                                     alt="Movie Poster" class="w-full h-80 object-cover">
+                                <div class="p-4">
+                                    <h3 class="font-semibold text-lg mb-2 truncate" data-bind="movie.title">The Pope's Exorcist</h3>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-1 text-yellow-400">
+                                            <i class="fas fa-star text-sm"></i>
+                                            <span class="text-sm font-medium" data-bind="movie.vote_average">7.1</span>
+                                        </div>
+                                        <span class="text-xs text-gray-400" data-bind="movie.release_date">2023</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Movie Card 4 -->
+                        <div class="movie-card cursor-pointer" data-movie-id="713704">
+                            <div class="glass-card rounded-xl overflow-hidden">
+                                <!-- Action-packed poster of Evil Dead Rise with horror elements -->
+                                <img src="https://pixabay.com/get/g06b3b8bfa7deaeb4dd514112a58a9b58a3b1603969273ecc2cf662b24fd63f9012a5304501a39cc81983f28ba8a2494798bb5f6abadab38d09a6fac8b5ceb3b0_1280.jpg" 
+                                     alt="Movie Poster" class="w-full h-80 object-cover">
+                                <div class="p-4">
+                                    <h3 class="font-semibold text-lg mb-2 truncate" data-bind="movie.title">Evil Dead Rise</h3>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-1 text-yellow-400">
+                                            <i class="fas fa-star text-sm"></i>
+                                            <span class="text-sm font-medium" data-bind="movie.vote_average">7.0</span>
+                                        </div>
+                                        <span class="text-xs text-gray-400" data-bind="movie.release_date">2023</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Movie Card 5 -->
+                        <div class="movie-card cursor-pointer" data-movie-id="677179">
+                            <div class="glass-card rounded-xl overflow-hidden">
+                                <!-- Dramatic poster of Creed III featuring boxing action scene -->
+                                <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=600" 
+                                     alt="Movie Poster" class="w-full h-80 object-cover">
+                                <div class="p-4">
+                                    <h3 class="font-semibold text-lg mb-2 truncate" data-bind="movie.title">Creed III</h3>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-1 text-yellow-400">
+                                            <i class="fas fa-star text-sm"></i>
+                                            <span class="text-sm font-medium" data-bind="movie.vote_average">7.3</span>
+                                        </div>
+                                        <span class="text-xs text-gray-400" data-bind="movie.release_date">2023</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Movie Card 6 -->
+                        <div class="movie-card cursor-pointer" data-movie-id="594767">
+                            <div class="glass-card rounded-xl overflow-hidden">
+                                <!-- Romantic comedy poster of Shazam! Fury of the Gods with superhero theme -->
+                                <img src="https://pixabay.com/get/g0734e12f0d59e186e3934e89d1f5c868408e3a0cf6f0df619f16e0a8f8ee9b0cfea79a109ecf6cab129ab7f8470a7a5666a4b081c19555535c8c88d243bbc20d_1280.jpg" 
+                                     alt="Movie Poster" class="w-full h-80 object-cover">
+                                <div class="p-4">
+                                    <h3 class="font-semibold text-lg mb-2 truncate" data-bind="movie.title">Shazam! Fury of the Gods</h3>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-1 text-yellow-400">
+                                            <i class="fas fa-star text-sm"></i>
+                                            <span class="text-sm font-medium" data-bind="movie.vote_average">6.8</span>
+                                        </div>
+                                        <span class="text-xs text-gray-400" data-bind="movie.release_date">2023</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Movie Card 7 -->
+                        <div class="movie-card cursor-pointer" data-movie-id="385687">
+                            <div class="glass-card rounded-xl overflow-hidden">
+                                <!-- Fast X action poster with cars and high-speed chase scenes -->
+                                <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=600" 
+                                     alt="Movie Poster" class="w-full h-80 object-cover">
+                                <div class="p-4">
+                                    <h3 class="font-semibold text-lg mb-2 truncate" data-bind="movie.title">Fast X</h3>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-1 text-yellow-400">
+                                            <i class="fas fa-star text-sm"></i>
+                                            <span class="text-sm font-medium" data-bind="movie.vote_average">7.2</span>
+                                        </div>
+                                        <span class="text-xs text-gray-400" data-bind="movie.release_date">2023</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Movie Card 8 -->
+                        <div class="movie-card cursor-pointer" data-movie-id="298618">
+                            <div class="glass-card rounded-xl overflow-hidden">
+                                <!-- The Flash superhero poster with lightning effects and dramatic colors -->
+                                <img src="https://pixabay.com/get/gbed84fc1d6147c77cbdd343ef42772e60bd838229249f8ea3627ee1e3573f60c6906f32ea07ade7c22cc87be37dc442c9373691379a5eec869d920ed68068723_1280.jpg" 
+                                     alt="Movie Poster" class="w-full h-80 object-cover">
+                                <div class="p-4">
+                                    <h3 class="font-semibold text-lg mb-2 truncate" data-bind="movie.title">The Flash</h3>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-1 text-yellow-400">
+                                            <i class="fas fa-star text-sm"></i>
+                                            <span class="text-sm font-medium" data-bind="movie.vote_average">6.9</span>
+                                        </div>
+                                        <span class="text-xs text-gray-400" data-bind="movie.release_date">2023</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- @END_MAP )) -->
+
+                    <!-- Pagination -->
+                    <div class="flex justify-center items-center space-x-4">
+                        <button class="px-4 py-2 bg-card-dark/70 rounded-lg text-gray-400 hover:text-white transition-colors" disabled>
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </button>
+                        <div class="flex space-x-2">
+                            <button class="w-10 h-10 bg-blue-500 text-white rounded-lg font-medium">1</button>
+                            <button class="w-10 h-10 bg-card-dark/70 text-gray-300 hover:text-white rounded-lg transition-colors">2</button>
+                            <button class="w-10 h-10 bg-card-dark/70 text-gray-300 hover:text-white rounded-lg transition-colors">3</button>
+                            <span class="w-10 h-10 flex items-center justify-center text-gray-500">...</span>
+                            <button class="w-10 h-10 bg-card-dark/70 text-gray-300 hover:text-white rounded-lg transition-colors">10</button>
+                        </div>
+                        <button class="px-4 py-2 bg-card-dark/70 rounded-lg text-gray-300 hover:text-white transition-colors">
+                            Next <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- @END_COMPONENT: PopularMoviesPage -->
+
+        <!-- @COMPONENT: TopRatedPage -->
+        <div id="top-rated-page" class="page-content hidden">
+            <section class="hero-gradient py-20">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center">
+                        <h1 class="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                            Top Rated Movies
+                        </h1>
+                        <p class="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
+                            Critically acclaimed masterpieces with the highest ratings from audiences and critics
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="py-16">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-12">
+                        <!-- Top-rated movies would be populated here -->
+                        <div class="text-center text-gray-400 col-span-full py-20">
+                            <i class="fas fa-film text-6xl mb-4"></i>
+                            <p>Top-rated movies will be loaded here...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- @END_COMPONENT: TopRatedPage -->
+
+        <!-- @COMPONENT: UpcomingPage -->
+        <div id="upcoming-page" class="page-content hidden">
+            <section class="hero-gradient py-20">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center">
+                        <h1 class="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                            Upcoming Movies
+                        </h1>
+                        <p class="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
+                            Get ready for the most anticipated movies coming soon to theaters worldwide
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="py-16">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-12">
+                        <!-- Upcoming movies would be populated here -->
+                        <div class="text-center text-gray-400 col-span-full py-20">
+                            <i class="fas fa-calendar-alt text-6xl mb-4"></i>
+                            <p>Upcoming movies will be loaded here...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- @END_COMPONENT: UpcomingPage -->
+
+        <!-- @COMPONENT: MovieDetailPage -->
+        <div id="movie-detail-page" class="page-content hidden">
+            <!-- Movie Detail Hero Section -->
+            <section class="relative">
+                <!-- Movie backdrop showing dramatic scene from The Super Mario Bros. Movie -->
+                <div class="h-96 bg-cover bg-center relative" style="background-image: linear-gradient(rgba(11, 20, 38, 0.7), rgba(11, 20, 38, 0.7)), url('https://pixabay.com/get/gdfc3e0b1d92399938eae01d4900fb32edaa3c9a7306da428cb64053d80499893f13289fb950c72e2937917aecaff3b369355d6ec4a9e0b6c605908582e90c59e_1280.jpg');">
+                    <div class="absolute inset-0 bg-gradient-to-t from-navy via-transparent to-transparent"></div>
+                </div>
+                
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative -mt-48">
+                    <div class="flex flex-col lg:flex-row gap-8 items-start">
+                        <!-- Movie Poster -->
+                        <div class="flex-shrink-0">
+                            <!-- Main poster image for The Super Mario Bros. Movie in vibrant colors -->
+                            <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=600" 
+                                 alt="Movie Poster" class="w-80 h-auto rounded-xl shadow-2xl glass-card">
+                        </div>
+                        
+                        <!-- Movie Info -->
+                        <div class="flex-1 pt-8">
+                            <h1 class="text-4xl md:text-6xl font-bold mb-4" data-bind="movie.title">The Super Mario Bros. Movie</h1>
+                            
+                            <div class="flex flex-wrap items-center gap-6 mb-6">
+                                <div class="flex items-center space-x-2">
+                                    <div class="flex items-center space-x-1 text-yellow-400">
+                                        <i class="fas fa-star"></i>
+                                        <span class="text-xl font-semibold" data-bind="movie.vote_average">7.8</span>
+                                    </div>
+                                    <span class="text-gray-400">/10</span>
+                                </div>
+                                <div class="text-gray-300" data-bind="movie.release_date">2023</div>
+                                <div class="text-gray-300" data-bind="movie.runtime">92 min</div>
+                                <div class="flex gap-2">
+                                    <span class="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm">Animation</span>
+                                    <span class="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm">Family</span>
+                                    <span class="px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-sm">Adventure</span>
+                                </div>
+                            </div>
+                            
+                            <p class="text-lg text-gray-300 leading-relaxed mb-8 max-w-3xl" data-bind="movie.overview">
+                                While working underground to fix a water main, Brooklyn plumbers—and brothers—Mario and Luigi are transported down a mysterious pipe and wander into a magical new world. But when the brothers are separated, Mario embarks on an epic quest to find Luigi.
+                            </p>
+                            
+                            <div class="flex gap-4">
+                                <button class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
+                                    <i class="fas fa-play mr-2"></i> Watch Trailer
+                                </button>
+                                <button class="bg-card-dark/70 hover:bg-card-dark text-white px-8 py-3 rounded-lg font-semibold transition-colors">
+                                    <i class="fas fa-bookmark mr-2"></i> Add to Watchlist
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Cast Section -->
+            <section class="py-16">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2 class="text-3xl font-bold mb-8">Cast</h2>
+                    
+                    <!-- @MAP: cast.map(member => ( -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                        <!-- Cast Member 1 -->
+                        <div class="cast-card">
+                            <div class="glass-card rounded-xl overflow-hidden text-center">
+                                <!-- Professional headshot of Chris Pratt with friendly smile -->
+                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300" 
+                                     alt="Cast Member" class="w-full h-48 object-cover">
+                                <div class="p-4">
+                                    <h3 class="font-semibold text-sm mb-1" data-bind="cast.name">Chris Pratt</h3>
+                                    <p class="text-xs text-gray-400" data-bind="cast.character">Mario (voice)</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cast Member 2 -->
+                        <div class="cast-card">
+                            <div class="glass-card rounded-xl overflow-hidden text-center">
+                                <!-- Professional headshot of Anya Taylor-Joy with elegant pose -->
+                                <img src="https://pixabay.com/get/gb4a5665e223c3bf9248bb24b18b2a1c225f76bca0f11048731660afac86f71f9a53e299049cb4c2f502704d5bb3877c41b92cea608893deec85b154fc3a32dc0_1280.jpg" 
+                                     alt="Cast Member" class="w-full h-48 object-cover">
+                                <div class="p-4">
+                                    <h3 class="font-semibold text-sm mb-1" data-bind="cast.name">Anya Taylor-Joy</h3>
+                                    <p class="text-xs text-gray-400" data-bind="cast.character">Princess Peach (voice)</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cast Member 3 -->
+                        <div class="cast-card">
+                            <div class="glass-card rounded-xl overflow-hidden text-center">
+                                <!-- Professional headshot of Charlie Day with cheerful expression -->
+                                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300" 
+                                     alt="Cast Member" class="w-full h-48 object-cover">
+                                <div class="p-4">
+                                    <h3 class="font-semibold text-sm mb-1" data-bind="cast.name">Charlie Day</h3>
+                                    <p class="text-xs text-gray-400" data-bind="cast.character">Luigi (voice)</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cast Member 4 -->
+                        <div class="cast-card">
+                            <div class="glass-card rounded-xl overflow-hidden text-center">
+                                <!-- Professional headshot of Jack Black with animated expression -->
+                                <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300" 
+                                     alt="Cast Member" class="w-full h-48 object-cover">
+                                <div class="p-4">
+                                    <h3 class="font-semibold text-sm mb-1" data-bind="cast.name">Jack Black</h3>
+                                    <p class="text-xs text-gray-400" data-bind="cast.character">Bowser (voice)</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cast Member 5 -->
+                        <div class="cast-card">
+                            <div class="glass-card rounded-xl overflow-hidden text-center">
+                                <!-- Professional headshot of Keegan-Michael Key with comedic smile -->
+                                <img src="https://images.unsplash.com/photo-1507591064344-4c6ce005b128?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300" 
+                                     alt="Cast Member" class="w-full h-48 object-cover">
+                                <div class="p-4">
+                                    <h3 class="font-semibold text-sm mb-1" data-bind="cast.name">Keegan-Michael Key</h3>
+                                    <p class="text-xs text-gray-400" data-bind="cast.character">Toad (voice)</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cast Member 6 -->
+                        <div class="cast-card">
+                            <div class="glass-card rounded-xl overflow-hidden text-center">
+                                <!-- Professional headshot of Seth Rogen with characteristic smile -->
+                                <img src="https://images.unsplash.com/photo-1463453091185-61582044d556?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300" 
+                                     alt="Cast Member" class="w-full h-48 object-cover">
+                                <div class="p-4">
+                                    <h3 class="font-semibold text-sm mb-1" data-bind="cast.name">Seth Rogen</h3>
+                                    <p class="text-xs text-gray-400" data-bind="cast.character">Donkey Kong (voice)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- @END_MAP )) -->
+                </div>
+            </section>
+        </div>
+        <!-- @END_COMPONENT: MovieDetailPage -->
+
+        <!-- @COMPONENT: SearchResultsPage -->
+        <div id="search-results-page" class="page-content hidden">
+            <section class="py-20">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="mb-8">
+                        <h1 class="text-3xl font-bold mb-4">Search Results for "<span id="search-query">action</span>"</h1>
+                        <p class="text-gray-300"><span id="search-count">24</span> movies found</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-12">
+                        <!-- Search results would be populated here -->
+                        <div class="text-center text-gray-400 col-span-full py-20">
+                            <i class="fas fa-search text-6xl mb-4"></i>
+                            <p>Search results will be displayed here...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- @END_COMPONENT: SearchResultsPage -->
+    </div>
+
+    <script>
+        // TODO: Implement React Router functionality
+        // TODO: Integrate TMDB API calls
+        // TODO: Add Redux state management for experienced developers
+        
+        (function() {
+            // Page navigation
+            const navButtons = document.querySelectorAll('[data-page]');
+            const pages = document.querySelectorAll('.page-content');
+            
+            function showPage(pageId) {
+                pages.forEach(page => page.classList.add('hidden'));
+                document.getElementById(pageId + '-page').classList.remove('hidden');
+                
+                navButtons.forEach(btn => {
+                    btn.classList.remove('text-white');
+                    btn.classList.add('text-gray-300');
+                });
+                document.querySelector(`[data-page="${pageId}"]`).classList.add('text-white');
+                document.querySelector(`[data-page="${pageId}"]`).classList.remove('text-gray-300');
+            }
+            
+            navButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    showPage(btn.dataset.page);
+                });
+            });
+            
+            // Movie card click handlers
+            const movieCards = document.querySelectorAll('.movie-card');
+            movieCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const movieId = card.dataset.movieId;
+                    // TODO: Load movie details from API
+                    showPage('movie-detail');
+                });
+            });
+            
+            // Search functionality
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const query = e.target.value.trim();
+                    if (query) {
+                        // TODO: Perform API search
+                        document.getElementById('search-query').textContent = query;
+                        showPage('search-results');
+                    }
+                }
+            });
+            
+            // TODO: Implement API calls to TMDB
+            // TODO: Add loading states and error handling
+            // TODO: Implement pagination functionality
+            // TODO: Add responsive mobile navigation menu
+        })();
+    </script>
+</body>
+</html>

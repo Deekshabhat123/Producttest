@@ -1,0 +1,587 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineHub - Movie Discovery Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    'cinema-dark': '#0f172a',
+                    'cinema-gray': '#1e293b',
+                    'cinema-blue': '#3b82f6',
+                    'cinema-gold': '#fbbf24'
+                },
+                fontFamily: {
+                    'inter': ['Inter', 'sans-serif']
+                }
+            }
+        }
+    };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-cinema-dark text-white font-inter">
+    <!-- @COMPONENT: NavigationBar [search, routing, responsive] -->
+    <nav class="bg-cinema-gray border-b border-gray-700 sticky top-0 z-50 backdrop-blur-sm bg-opacity-95">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold text-cinema-blue">CineHub</h1>
+                    </div>
+                    <!-- Navigation Links -->
+                    <div class="hidden md:block ml-10">
+                        <div class="flex items-baseline space-x-8">
+                            <a href="#" data-page="home" class="nav-link text-white hover:text-cinema-blue px-3 py-2 rounded-md text-sm font-medium transition-colors active">Home</a>
+                            <a href="#" data-page="top-rated" class="nav-link text-gray-300 hover:text-cinema-blue px-3 py-2 rounded-md text-sm font-medium transition-colors">Top Rated</a>
+                            <a href="#" data-page="upcoming" class="nav-link text-gray-300 hover:text-cinema-blue px-3 py-2 rounded-md text-sm font-medium transition-colors">Upcoming</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="flex-1 max-w-lg mx-8">
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                        <input type="text" id="searchInput" placeholder="Search movies..." 
+                               class="block w-full pl-10 pr-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cinema-blue focus:ring-1 focus:ring-cinema-blue" 
+                               data-implementation="Should trigger real-time search API calls">
+                    </div>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- @END_COMPONENT: NavigationBar -->
+
+    <!-- Main Content Container -->
+    <main class="min-h-screen">
+        <!-- @COMPONENT: HomePage [popular movies, pagination] -->
+        <div id="homePage" class="page-content">
+            <!-- Hero Section -->
+            <section class="relative h-96 overflow-hidden">
+                <!-- A cinematic wide shot of a movie theater interior with red velvet seats -->
+                <div class="absolute inset-0 bg-gradient-to-r from-cinema-dark via-transparent to-cinema-dark z-10"></div>
+                <img src="https://pixabay.com/get/g614e1e4b854f53ea6f0ef64df026b3feffa15f0d3f94c26622b1d50b208dcdd89ad707c48f51a37c93c923dafbbbf570c0afa455160df9420042fa348483d93a_1280.jpg" 
+                     alt="Movie theater interior" 
+                     class="w-full h-full object-cover">
+                <div class="absolute inset-0 flex items-center justify-center z-20">
+                    <div class="text-center">
+                        <h1 class="text-5xl md:text-7xl font-bold mb-4">Popular Movies</h1>
+                        <p class="text-xl text-gray-300 max-w-2xl mx-auto">Discover the most popular movies everyone's talking about</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Movies Grid -->
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl font-bold">Popular Now</h2>
+                    <div class="flex items-center space-x-4">
+                        <!-- @STATE: currentPage:number = 1, totalPages:number -->
+                        <span class="text-gray-400" data-bind="pageInfo">Page 1 of 500</span>
+                    </div>
+                </div>
+
+                <!-- @MAP: popularMovies.map(movie => ( -->
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6 mb-12">
+                    <!-- Movie Card 1 -->
+                    <div class="movie-card group cursor-pointer transform transition-all duration-300 hover:scale-105" data-movie-id="123" data-event="click:navigateToDetail">
+                        <!-- Movie poster for a popular action film -->
+                        <div class="relative overflow-hidden rounded-lg shadow-xl">
+                            <img src="https://images.unsplash.com/photo-1440404653325-ab127d49abc1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=450" 
+                                 alt="Movie poster" 
+                                 class="w-full h-80 object-cover group-hover:opacity-80 transition-opacity" 
+                                 data-bind="movie.poster_path">
+                            <div class="absolute top-2 right-2 bg-black bg-opacity-70 rounded-full px-2 py-1">
+                                <div class="flex items-center">
+                                    <i class="fas fa-star text-cinema-gold text-xs mr-1"></i>
+                                    <span class="text-xs font-medium" data-bind="movie.vote_average">8.5</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <h3 class="font-semibold text-sm truncate" data-bind="movie.title" data-mock="true">Avatar: The Way of Water</h3>
+                            <p class="text-gray-400 text-xs mt-1" data-bind="movie.release_date" data-mock="true">2022</p>
+                        </div>
+                    </div>
+
+                    <!-- Movie Card 2 -->
+                    <div class="movie-card group cursor-pointer transform transition-all duration-300 hover:scale-105" data-movie-id="456">
+                        <!-- Movie poster for a sci-fi thriller -->
+                        <div class="relative overflow-hidden rounded-lg shadow-xl">
+                            <img src="https://images.unsplash.com/photo-1518676590629-3dcbd9c5a5c9?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=450" 
+                                 alt="Movie poster" 
+                                 class="w-full h-80 object-cover group-hover:opacity-80 transition-opacity">
+                            <div class="absolute top-2 right-2 bg-black bg-opacity-70 rounded-full px-2 py-1">
+                                <div class="flex items-center">
+                                    <i class="fas fa-star text-cinema-gold text-xs mr-1"></i>
+                                    <span class="text-xs font-medium" data-mock="true">7.8</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <h3 class="font-semibold text-sm truncate" data-mock="true">Interstellar Journey</h3>
+                            <p class="text-gray-400 text-xs mt-1" data-mock="true">2023</p>
+                        </div>
+                    </div>
+
+                    <!-- Movie Card 3 -->
+                    <div class="movie-card group cursor-pointer transform transition-all duration-300 hover:scale-105" data-movie-id="789">
+                        <!-- Movie poster for a dramatic film -->
+                        <div class="relative overflow-hidden rounded-lg shadow-xl">
+                            <img src="https://pixabay.com/get/g6f251dd1d6fa4ad7da7425f704f5635a6f47fa7ec50140413264855626727d2ad1288a531c0dbd9edebd9d0293a50f52f0ea3123b2c6765028081dbe311b832d_1280.jpg" 
+                                 alt="Movie poster" 
+                                 class="w-full h-80 object-cover group-hover:opacity-80 transition-opacity">
+                            <div class="absolute top-2 right-2 bg-black bg-opacity-70 rounded-full px-2 py-1">
+                                <div class="flex items-center">
+                                    <i class="fas fa-star text-cinema-gold text-xs mr-1"></i>
+                                    <span class="text-xs font-medium" data-mock="true">9.2</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <h3 class="font-semibold text-sm truncate" data-mock="true">The Masterpiece</h3>
+                            <p class="text-gray-400 text-xs mt-1" data-mock="true">2023</p>
+                        </div>
+                    </div>
+
+                    <!-- Movie Card 4 -->
+                    <div class="movie-card group cursor-pointer transform transition-all duration-300 hover:scale-105" data-movie-id="101">
+                        <!-- Movie poster for an adventure film -->
+                        <div class="relative overflow-hidden rounded-lg shadow-xl">
+                            <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=450" 
+                                 alt="Movie poster" 
+                                 class="w-full h-80 object-cover group-hover:opacity-80 transition-opacity">
+                            <div class="absolute top-2 right-2 bg-black bg-opacity-70 rounded-full px-2 py-1">
+                                <div class="flex items-center">
+                                    <i class="fas fa-star text-cinema-gold text-xs mr-1"></i>
+                                    <span class="text-xs font-medium" data-mock="true">8.1</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <h3 class="font-semibold text-sm truncate" data-mock="true">Epic Adventure</h3>
+                            <p class="text-gray-400 text-xs mt-1" data-mock="true">2023</p>
+                        </div>
+                    </div>
+
+                    <!-- Movie Card 5 -->
+                    <div class="movie-card group cursor-pointer transform transition-all duration-300 hover:scale-105" data-movie-id="202">
+                        <!-- Movie poster for a superhero film -->
+                        <div class="relative overflow-hidden rounded-lg shadow-xl">
+                            <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=450" 
+                                 alt="Movie poster" 
+                                 class="w-full h-80 object-cover group-hover:opacity-80 transition-opacity">
+                            <div class="absolute top-2 right-2 bg-black bg-opacity-70 rounded-full px-2 py-1">
+                                <div class="flex items-center">
+                                    <i class="fas fa-star text-cinema-gold text-xs mr-1"></i>
+                                    <span class="text-xs font-medium" data-mock="true">8.7</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <h3 class="font-semibold text-sm truncate" data-mock="true">Heroes United</h3>
+                            <p class="text-gray-400 text-xs mt-1" data-mock="true">2023</p>
+                        </div>
+                    </div>
+
+                    <!-- Movie Card 6 -->
+                    <div class="movie-card group cursor-pointer transform transition-all duration-300 hover:scale-105" data-movie-id="303">
+                        <!-- Movie poster for a mystery thriller -->
+                        <div class="relative overflow-hidden rounded-lg shadow-xl">
+                            <img src="https://pixabay.com/get/ga4a18bfbe1f0921ac136ea828ea3c855c1719d34a1721ceca2015187e7b19a11c700c88843139f394a6cf1a6867b93cd722582e8d80c83c8737f507261c27ced_1280.jpg" 
+                                 alt="Movie poster" 
+                                 class="w-full h-80 object-cover group-hover:opacity-80 transition-opacity">
+                            <div class="absolute top-2 right-2 bg-black bg-opacity-70 rounded-full px-2 py-1">
+                                <div class="flex items-center">
+                                    <i class="fas fa-star text-cinema-gold text-xs mr-1"></i>
+                                    <span class="text-xs font-medium" data-mock="true">7.9</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <h3 class="font-semibold text-sm truncate" data-mock="true">Dark Mystery</h3>
+                            <p class="text-gray-400 text-xs mt-1" data-mock="true">2023</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_MAP )) -->
+
+                <!-- Pagination -->
+                <!-- @COMPONENT: PaginationControls [currentPage, totalPages, onPageChange] -->
+                <div class="flex justify-center items-center space-x-4">
+                    <button class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors disabled:opacity-50" disabled data-event="click:previousPage">
+                        <i class="fas fa-chevron-left mr-2"></i>Previous
+                    </button>
+                    <div class="flex space-x-2">
+                        <button class="px-3 py-1 bg-cinema-blue text-white rounded" data-mock="true">1</button>
+                        <button class="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded transition-colors" data-mock="true">2</button>
+                        <button class="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded transition-colors" data-mock="true">3</button>
+                        <span class="px-3 py-1 text-gray-400">...</span>
+                        <button class="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded transition-colors" data-mock="true">500</button>
+                    </div>
+                    <button class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors" data-event="click:nextPage">
+                        Next<i class="fas fa-chevron-right ml-2"></i>
+                    </button>
+                </div>
+                <!-- @END_COMPONENT: PaginationControls -->
+            </section>
+        </div>
+        <!-- @END_COMPONENT: HomePage -->
+
+        <!-- @COMPONENT: TopRatedPage [top-rated movies, pagination] -->
+        <div id="topRatedPage" class="page-content hidden">
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="text-center mb-12">
+                    <h1 class="text-4xl md:text-6xl font-bold mb-4">Top Rated Movies</h1>
+                    <p class="text-xl text-gray-300">The highest rated movies of all time</p>
+                </div>
+
+                <!-- Same grid structure as home page but with top-rated movies -->
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6 mb-12">
+                    <!-- Top-rated movies would be mapped here -->
+                    <!-- Similar movie card structure as home page -->
+                </div>
+
+                <!-- Pagination component would be here -->
+            </section>
+        </div>
+        <!-- @END_COMPONENT: TopRatedPage -->
+
+        <!-- @COMPONENT: UpcomingPage [upcoming movies, pagination] -->
+        <div id="upcomingPage" class="page-content hidden">
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="text-center mb-12">
+                    <h1 class="text-4xl md:text-6xl font-bold mb-4">Upcoming Movies</h1>
+                    <p class="text-xl text-gray-300">Get ready for these exciting releases</p>
+                </div>
+
+                <!-- Same grid structure for upcoming movies -->
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6 mb-12">
+                    <!-- Upcoming movies would be mapped here -->
+                </div>
+            </section>
+        </div>
+        <!-- @END_COMPONENT: UpcomingPage -->
+
+        <!-- @COMPONENT: MovieDetailPage [movie details, cast] -->
+        <div id="movieDetailPage" class="page-content hidden">
+            <div class="relative">
+                <!-- Movie Detail Hero Section -->
+                <!-- A cinematic backdrop scene from a major film production -->
+                <div class="relative h-screen bg-cover bg-center" style="background-image: linear-gradient(to right, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.4)), url('https://pixabay.com/get/gd6e8989f3db1e0a756f1551d3efae64687086a51e389f5b9c5d448e06981ed9d23368a69be4f57c3971ab76a33481bd67260fb28a941e28777414cbe16e3169b_1280.jpg');">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+                                <!-- Movie Poster -->
+                                <div class="lg:col-span-1">
+                                    <!-- Movie poster for the selected film -->
+                                    <img src="https://images.unsplash.com/photo-1440404653325-ab127d49abc1?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=600" 
+                                         alt="Movie poster" 
+                                         class="w-full max-w-sm mx-auto rounded-xl shadow-2xl" 
+                                         data-bind="movie.poster_path">
+                                </div>
+
+                                <!-- Movie Details -->
+                                <div class="lg:col-span-2 space-y-6">
+                                    <div>
+                                        <h1 class="text-4xl md:text-6xl font-bold mb-4" data-bind="movie.title" data-mock="true">Avatar: The Way of Water</h1>
+                                        <div class="flex flex-wrap items-center gap-4 text-lg text-gray-300 mb-6">
+                                            <span data-bind="movie.release_date" data-mock="true">2022</span>
+                                            <span>•</span>
+                                            <span data-bind="movie.runtime" data-mock="true">192 min</span>
+                                            <span>•</span>
+                                            <div class="flex items-center bg-cinema-gold text-black px-3 py-1 rounded-full">
+                                                <i class="fas fa-star mr-1"></i>
+                                                <span class="font-semibold" data-bind="movie.vote_average" data-mock="true">8.5</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Genres -->
+                                    <div class="flex flex-wrap gap-2 mb-6">
+                                        <span class="px-3 py-1 bg-gray-700 rounded-full text-sm" data-mock="true">Action</span>
+                                        <span class="px-3 py-1 bg-gray-700 rounded-full text-sm" data-mock="true">Adventure</span>
+                                        <span class="px-3 py-1 bg-gray-700 rounded-full text-sm" data-mock="true">Sci-Fi</span>
+                                    </div>
+
+                                    <!-- Overview -->
+                                    <div>
+                                        <h3 class="text-2xl font-semibold mb-4">Overview</h3>
+                                        <p class="text-gray-300 text-lg leading-relaxed" data-bind="movie.overview" data-mock="true">
+                                            Set more than a decade after the events of the first film, "Avatar: The Way of Water" begins to tell the story of the Sully family, the trouble that follows them, the lengths they go to keep each other safe, the battles they fight to stay alive, and the tragedies they endure.
+                                        </p>
+                                    </div>
+
+                                    <!-- Action Buttons -->
+                                    <div class="flex space-x-4 pt-4">
+                                        <button class="bg-cinema-blue hover:bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
+                                            <i class="fas fa-play mr-2"></i>Watch Trailer
+                                        </button>
+                                        <button class="bg-gray-700 hover:bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
+                                            <i class="fas fa-plus mr-2"></i>Add to Watchlist
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cast Section -->
+                <section class="bg-cinema-gray py-16">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <h2 class="text-3xl font-bold mb-8">Cast</h2>
+                        
+                        <!-- @MAP: movieCast.map(actor => ( -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-6">
+                            <!-- Cast Member 1 -->
+                            <div class="text-center">
+                                <!-- Professional headshot of a male actor -->
+                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200" 
+                                     alt="Actor headshot" 
+                                     class="w-full h-32 object-cover rounded-lg shadow-lg mb-3" 
+                                     data-bind="actor.profile_path">
+                                <h4 class="font-semibold text-sm" data-bind="actor.name" data-mock="true">Sam Worthington</h4>
+                                <p class="text-gray-400 text-xs" data-bind="actor.character" data-mock="true">Jake Sully</p>
+                            </div>
+
+                            <!-- Cast Member 2 -->
+                            <div class="text-center">
+                                <!-- Professional headshot of a female actor -->
+                                <img src="https://pixabay.com/get/gf48e0916a6a2ca15d8dfc6b6179ab600aa8c9499b42858f8044bc55ccee7a7c54ddfb827a935fe12c843918e74fd2c79327b87b97f19d27d41a9f04a5c1f2a2a_1280.jpg" 
+                                     alt="Actor headshot" 
+                                     class="w-full h-32 object-cover rounded-lg shadow-lg mb-3">
+                                <h4 class="font-semibold text-sm" data-mock="true">Zoe Saldana</h4>
+                                <p class="text-gray-400 text-xs" data-mock="true">Neytiri</p>
+                            </div>
+
+                            <!-- Cast Member 3 -->
+                            <div class="text-center">
+                                <!-- Professional headshot of a mature male actor -->
+                                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200" 
+                                     alt="Actor headshot" 
+                                     class="w-full h-32 object-cover rounded-lg shadow-lg mb-3">
+                                <h4 class="font-semibold text-sm" data-mock="true">Sigourney Weaver</h4>
+                                <p class="text-gray-400 text-xs" data-mock="true">Kiri</p>
+                            </div>
+
+                            <!-- Cast Member 4 -->
+                            <div class="text-center">
+                                <!-- Professional headshot of a young male actor -->
+                                <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200" 
+                                     alt="Actor headshot" 
+                                     class="w-full h-32 object-cover rounded-lg shadow-lg mb-3">
+                                <h4 class="font-semibold text-sm" data-mock="true">Britain Dalton</h4>
+                                <p class="text-gray-400 text-xs" data-mock="true">Lo'ak</p>
+                            </div>
+
+                            <!-- Cast Member 5 -->
+                            <div class="text-center">
+                                <!-- Professional headshot of a female actor with dark hair -->
+                                <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200" 
+                                     alt="Actor headshot" 
+                                     class="w-full h-32 object-cover rounded-lg shadow-lg mb-3">
+                                <h4 class="font-semibold text-sm" data-mock="true">Trinity Bliss</h4>
+                                <p class="text-gray-400 text-xs" data-mock="true">Tuktirey</p>
+                            </div>
+
+                            <!-- Cast Member 6 -->
+                            <div class="text-center">
+                                <!-- Professional headshot of a distinguished male actor -->
+                                <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200" 
+                                     alt="Actor headshot" 
+                                     class="w-full h-32 object-cover rounded-lg shadow-lg mb-3">
+                                <h4 class="font-semibold text-sm" data-mock="true">Stephen Lang</h4>
+                                <p class="text-gray-400 text-xs" data-mock="true">General Ardmore</p>
+                            </div>
+
+                            <!-- Cast Member 7 -->
+                            <div class="text-center">
+                                <!-- Professional headshot of a blonde female actor -->
+                                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200" 
+                                     alt="Actor headshot" 
+                                     class="w-full h-32 object-cover rounded-lg shadow-lg mb-3">
+                                <h4 class="font-semibold text-sm" data-mock="true">Kate Winslet</h4>
+                                <p class="text-gray-400 text-xs" data-mock="true">Ronal</p>
+                            </div>
+
+                            <!-- Cast Member 8 -->
+                            <div class="text-center">
+                                <!-- Professional headshot of a young male actor with curly hair -->
+                                <img src="https://images.unsplash.com/photo-1552058544-f2b08422138a?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200" 
+                                     alt="Actor headshot" 
+                                     class="w-full h-32 object-cover rounded-lg shadow-lg mb-3">
+                                <h4 class="font-semibold text-sm" data-mock="true">Jamie Flatters</h4>
+                                <p class="text-gray-400 text-xs" data-mock="true">Neteyam</p>
+                            </div>
+                        </div>
+                        <!-- @END_MAP )) -->
+                    </div>
+                </section>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: MovieDetailPage -->
+
+        <!-- @COMPONENT: SearchResultsPage [search results, same UI as home] -->
+        <div id="searchResultsPage" class="page-content hidden">
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold mb-2">Search Results</h1>
+                    <p class="text-gray-400" data-bind="searchQuery" data-mock="true">Showing results for "avatar"</p>
+                </div>
+
+                <!-- Same grid structure as home page for search results -->
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6 mb-12">
+                    <!-- Search results would be mapped here -->
+                </div>
+
+                <!-- Pagination for search results -->
+            </section>
+        </div>
+        <!-- @END_COMPONENT: SearchResultsPage -->
+    </main>
+
+    <!-- Loading Overlay -->
+    <!-- @COMPONENT: LoadingOverlay [isLoading] -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-cinema-blue mx-auto mb-4"></div>
+            <p class="text-white">Loading movies...</p>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: LoadingOverlay -->
+
+    <script>
+        // Navigation and Page Management
+        (function() {
+            // TODO: Implement Redux store for state management
+            // TODO: Implement React Router for navigation
+            // TODO: Implement API integration with TMDB
+
+            const API_KEY = 'c45a857c193f6302f2b5061c3b85e743';
+            const BASE_URL = 'https://api.themoviedb.org/3';
+            const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
+
+            // Page navigation simulation
+            const navLinks = document.querySelectorAll('.nav-link');
+            const pages = document.querySelectorAll('.page-content');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetPage = link.getAttribute('data-page');
+                    
+                    // Update active nav
+                    navLinks.forEach(nav => nav.classList.remove('active', 'text-white'));
+                    navLinks.forEach(nav => nav.classList.add('text-gray-300'));
+                    link.classList.remove('text-gray-300');
+                    link.classList.add('active', 'text-white');
+                    
+                    // Show target page
+                    pages.forEach(page => page.classList.add('hidden'));
+                    
+                    let targetElement;
+                    switch(targetPage) {
+                        case 'home':
+                            targetElement = document.getElementById('homePage');
+                            break;
+                        case 'top-rated':
+                            targetElement = document.getElementById('topRatedPage');
+                            break;
+                        case 'upcoming':
+                            targetElement = document.getElementById('upcomingPage');
+                            break;
+                    }
+                    
+                    if (targetElement) {
+                        targetElement.classList.remove('hidden');
+                    }
+                });
+            });
+
+            // Movie card click handlers
+            const movieCards = document.querySelectorAll('.movie-card');
+            movieCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    // Hide all pages
+                    pages.forEach(page => page.classList.add('hidden'));
+                    // Show movie detail page
+                    document.getElementById('movieDetailPage').classList.remove('hidden');
+                    
+                    // TODO: Load movie details from API
+                    // TODO: Update movie detail page with real data
+                });
+            });
+
+            // Search functionality
+            const searchInput = document.getElementById('searchInput');
+            let searchTimeout;
+
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                const query = e.target.value.trim();
+                
+                if (query.length > 2) {
+                    searchTimeout = setTimeout(() => {
+                        // TODO: Implement search API call
+                        // TODO: Show search results page
+                        console.log('Searching for:', query);
+                    }, 300);
+                }
+            });
+
+            // Pagination handlers
+            const paginationButtons = document.querySelectorAll('[data-event*="Page"]');
+            paginationButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // TODO: Implement pagination logic
+                    // TODO: Update current page state
+                    // TODO: Fetch new page data
+                });
+            });
+
+            // API Integration Functions (to be implemented)
+            async function fetchPopularMovies(page = 1) {
+                // TODO: Implement API call to fetch popular movies
+                // return fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=${page}`)
+            }
+
+            async function fetchTopRatedMovies(page = 1) {
+                // TODO: Implement API call to fetch top-rated movies
+            }
+
+            async function fetchUpcomingMovies(page = 1) {
+                // TODO: Implement API call to fetch upcoming movies
+            }
+
+            async function fetchMovieDetails(movieId) {
+                // TODO: Implement API call to fetch movie details
+            }
+
+            async function fetchMovieCredits(movieId) {
+                // TODO: Implement API call to fetch movie cast
+            }
+
+            async function searchMovies(query, page = 1) {
+                // TODO: Implement API call to search movies
+            }
+
+        })();
+    </script>
+</body>
+</html>

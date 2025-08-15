@@ -1,0 +1,594 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieFlix - Discover Movies</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'netflix-red': '#E50914',
+                        'netflix-black': '#0A0A0A',
+                        'netflix-dark': '#1A1A1A',
+                        'netflix-gray': '#2A2A2A'
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .movie-card:hover { transform: scale(1.05); }
+        .cast-card:hover { transform: translateY(-5px); }
+        .skeleton { background: linear-gradient(90deg, #2A2A2A 25%, #3A3A3A 50%, #2A2A2A 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s infinite; }
+        @keyframes skeleton-loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-netflix-black text-white min-h-screen">
+    <!-- @COMPONENT: Navigation -->
+    <nav class="bg-netflix-dark border-b border-netflix-gray sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-netflix-red">MovieFlix</h1>
+                </div>
+                
+                <!-- Navigation Links -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <button onclick="showPage('home')" class="nav-link text-white hover:text-netflix-red px-3 py-2 rounded-md text-sm font-medium transition-colors">Popular</button>
+                        <button onclick="showPage('top-rated')" class="nav-link text-gray-300 hover:text-netflix-red px-3 py-2 rounded-md text-sm font-medium transition-colors">Top Rated</button>
+                        <button onclick="showPage('upcoming')" class="nav-link text-gray-300 hover:text-netflix-red px-3 py-2 rounded-md text-sm font-medium transition-colors">Upcoming</button>
+                    </div>
+                </div>
+                
+                <!-- Search Bar -->
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="searchInput"
+                        placeholder="Search movies..." 
+                        class="bg-netflix-gray text-white placeholder-gray-400 px-4 py-2 pl-10 rounded-lg focus:outline-none focus:ring-2 focus:ring-netflix-red w-64"
+                        onkeypress="handleSearch(event)"
+                    >
+                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+                
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button onclick="toggleMobileMenu()" class="text-gray-400 hover:text-white">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Navigation -->
+        <div id="mobileMenu" class="md:hidden hidden bg-netflix-gray">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <button onclick="showPage('home')" class="nav-link-mobile text-white hover:text-netflix-red block px-3 py-2 rounded-md text-base font-medium w-full text-left">Popular</button>
+                <button onclick="showPage('top-rated')" class="nav-link-mobile text-gray-300 hover:text-netflix-red block px-3 py-2 rounded-md text-base font-medium w-full text-left">Top Rated</button>
+                <button onclick="showPage('upcoming')" class="nav-link-mobile text-gray-300 hover:text-netflix-red block px-3 py-2 rounded-md text-base font-medium w-full text-left">Upcoming</button>
+            </div>
+        </div>
+    </nav>
+    <!-- @END_COMPONENT: Navigation -->
+
+    <!-- @COMPONENT: HomePage -->
+    <div id="homePage" class="page-content">
+        <!-- Hero Section -->
+        <div class="relative h-96 bg-gradient-to-r from-netflix-black via-netflix-dark to-transparent">
+            <!-- Popular movie poster background with modern streaming platform hero design -->
+            <div class="absolute inset-0 bg-cover bg-center opacity-50" style="background-image: url('https://pixabay.com/get/gb2156e702994a6e2a5d117d992a11eb56933c10282a73d507fe870e3140f3742749c26e58e3befac04c3e3976a17a5c94faaea12e6145311e3680982b1cc1781_1280.jpg');"></div>
+            <div class="relative max-w-7xl mx-auto px-4 h-full flex items-center">
+                <div class="max-w-2xl">
+                    <h1 class="text-5xl font-bold mb-4">Discover Popular Movies</h1>
+                    <p class="text-xl text-gray-300 mb-8">Explore the most popular movies trending right now. From blockbusters to hidden gems.</p>
+                    <button class="bg-netflix-red hover:bg-red-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors">
+                        <i class="fas fa-play mr-2"></i>Watch Trailer
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Movies Grid -->
+        <div class="max-w-7xl mx-auto px-4 py-12">
+            <h2 class="text-3xl font-bold mb-8">Popular Movies</h2>
+            
+            <!-- Loading State -->
+            <div id="loadingState" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-8">
+                <!-- Skeleton cards -->
+                <div class="skeleton rounded-lg h-80"></div>
+                <div class="skeleton rounded-lg h-80"></div>
+                <div class="skeleton rounded-lg h-80"></div>
+                <div class="skeleton rounded-lg h-80 hidden md:block"></div>
+                <div class="skeleton rounded-lg h-80 hidden lg:block"></div>
+                <div class="skeleton rounded-lg h-80 hidden lg:block"></div>
+            </div>
+
+            <!-- Movies Grid -->
+            <div id="moviesGrid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-8 hidden">
+                <!-- @MAP: movies.map(movie => ( -->
+                <div class="movie-card bg-netflix-gray rounded-lg overflow-hidden cursor-pointer transition-transform duration-300" onclick="showMovieDetail(550)">
+                    <!-- Movie poster featuring action blockbuster -->
+                    <img src="https://pixabay.com/get/g80ba33caabdfa88d7074b9fe938a7315af9356d77e285c4550f6817ec20d8d1e87bb5b579362faa2f9f9d12fe0502ec2ca0c20c03fdf142bc07ba10e2ce5d8d1_1280.jpg" alt="Fight Club" class="w-full h-64 object-cover">
+                    <div class="p-4">
+                        <h3 class="font-semibold text-sm mb-2 line-clamp-2" data-bind="movie.title">Fight Club</h3>
+                        <div class="flex items-center justify-between">
+                            <span class="text-yellow-400 text-sm">
+                                <i class="fas fa-star mr-1"></i>
+                                <span data-bind="movie.vote_average">8.8</span>
+                            </span>
+                            <span class="text-gray-400 text-xs" data-bind="movie.release_date">1999</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="movie-card bg-netflix-gray rounded-lg overflow-hidden cursor-pointer transition-transform duration-300" onclick="showMovieDetail(680)">
+                    <!-- Movie poster featuring sci-fi thriller -->
+                    <img src="https://pixabay.com/get/gdfdd888089a14f8e4e5c86c93ee1e93d8f31d4add2d850b4bb808bce4c0c5e7f50ee86c310d6ef8ce88a793bd9e0074ff764dee33af6bd07e7f03e865e402af4_1280.jpg" alt="Pulp Fiction" class="w-full h-64 object-cover">
+                    <div class="p-4">
+                        <h3 class="font-semibold text-sm mb-2 line-clamp-2">Pulp Fiction</h3>
+                        <div class="flex items-center justify-between">
+                            <span class="text-yellow-400 text-sm">
+                                <i class="fas fa-star mr-1"></i>
+                                <span>8.9</span>
+                            </span>
+                            <span class="text-gray-400 text-xs">1994</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="movie-card bg-netflix-gray rounded-lg overflow-hidden cursor-pointer transition-transform duration-300" onclick="showMovieDetail(238)">
+                    <!-- Movie poster featuring crime drama -->
+                    <img src="https://images.unsplash.com/photo-1594909122845-11baa439b7bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=750" alt="The Godfather" class="w-full h-64 object-cover">
+                    <div class="p-4">
+                        <h3 class="font-semibold text-sm mb-2 line-clamp-2">The Godfather</h3>
+                        <div class="flex items-center justify-between">
+                            <span class="text-yellow-400 text-sm">
+                                <i class="fas fa-star mr-1"></i>
+                                <span>9.2</span>
+                            </span>
+                            <span class="text-gray-400 text-xs">1972</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="movie-card bg-netflix-gray rounded-lg overflow-hidden cursor-pointer transition-transform duration-300 hidden md:block" onclick="showMovieDetail(424)">
+                    <!-- Movie poster featuring superhero action -->
+                    <img src="https://images.unsplash.com/photo-1606041011872-596597976b25?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=750" alt="Schindler's List" class="w-full h-64 object-cover">
+                    <div class="p-4">
+                        <h3 class="font-semibold text-sm mb-2 line-clamp-2">Schindler's List</h3>
+                        <div class="flex items-center justify-between">
+                            <span class="text-yellow-400 text-sm">
+                                <i class="fas fa-star mr-1"></i>
+                                <span>8.9</span>
+                            </span>
+                            <span class="text-gray-400 text-xs">1993</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="movie-card bg-netflix-gray rounded-lg overflow-hidden cursor-pointer transition-transform duration-300 hidden lg:block" onclick="showMovieDetail(19)">
+                    <!-- Movie poster featuring romantic drama -->
+                    <img src="https://pixabay.com/get/g6c66dfb7e02584ab5a9c8db208c91ad283381db32245bafd0a649328ecae35da00685f6ad1a42dbbe83501ed57f68078309cc8d5b05ecf4f88e1a3db331db8fa_1280.jpg" alt="12 Angry Men" class="w-full h-64 object-cover">
+                    <div class="p-4">
+                        <h3 class="font-semibold text-sm mb-2 line-clamp-2">12 Angry Men</h3>
+                        <div class="flex items-center justify-between">
+                            <span class="text-yellow-400 text-sm">
+                                <i class="fas fa-star mr-1"></i>
+                                <span>8.9</span>
+                            </span>
+                            <span class="text-gray-400 text-xs">1957</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="movie-card bg-netflix-gray rounded-lg overflow-hidden cursor-pointer transition-transform duration-300 hidden lg:block" onclick="showMovieDetail(278)">
+                    <!-- Movie poster featuring drama -->
+                    <img src="https://pixabay.com/get/gff904d9b82d9549604ff2dd18897fc828652fb617e479d574432756a5e838b5e60f21211e686be5c8e7b60e6e450a5cefa831cd0a34d66ddc2fa26f11f2bb2c3_1280.jpg" alt="The Shawshank Redemption" class="w-full h-64 object-cover">
+                    <div class="p-4">
+                        <h3 class="font-semibold text-sm mb-2 line-clamp-2">The Shawshank Redemption</h3>
+                        <div class="flex items-center justify-between">
+                            <span class="text-yellow-400 text-sm">
+                                <i class="fas fa-star mr-1"></i>
+                                <span>9.3</span>
+                            </span>
+                            <span class="text-gray-400 text-xs">1994</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_MAP )) -->
+            </div>
+
+            <!-- Pagination -->
+            <div class="flex justify-center items-center space-x-4">
+                <button class="bg-netflix-gray hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50" disabled>
+                    <i class="fas fa-chevron-left mr-2"></i>Previous
+                </button>
+                <div class="flex space-x-2">
+                    <button class="bg-netflix-red text-white px-3 py-2 rounded-lg">1</button>
+                    <button class="bg-netflix-gray hover:bg-gray-600 text-white px-3 py-2 rounded-lg transition-colors">2</button>
+                    <button class="bg-netflix-gray hover:bg-gray-600 text-white px-3 py-2 rounded-lg transition-colors">3</button>
+                    <span class="text-gray-400 px-3 py-2">...</span>
+                    <button class="bg-netflix-gray hover:bg-gray-600 text-white px-3 py-2 rounded-lg transition-colors">10</button>
+                </div>
+                <button class="bg-netflix-gray hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
+                    Next<i class="fas fa-chevron-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: HomePage -->
+
+    <!-- @COMPONENT: TopRatedPage -->
+    <div id="topRatedPage" class="page-content hidden">
+        <div class="max-w-7xl mx-auto px-4 py-12">
+            <div class="mb-8">
+                <h1 class="text-4xl font-bold mb-4">Top Rated Movies</h1>
+                <p class="text-gray-300 text-lg">The highest rated movies of all time according to our users</p>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-8">
+                <!-- Similar movie cards structure as home page -->
+                <div class="movie-card bg-netflix-gray rounded-lg overflow-hidden cursor-pointer transition-transform duration-300">
+                    <!-- Movie poster featuring critically acclaimed film -->
+                    <img src="https://pixabay.com/get/g1fb4bf54a3ed9eb01d9ef95610855f83a6e4ef055aa41913a1855167592345b73229a34c5c35d73200b89db02ccb001a833e630aca98562a0a6c290366cb682f_1280.jpg" alt="The Shawshank Redemption" class="w-full h-64 object-cover">
+                    <div class="p-4">
+                        <h3 class="font-semibold text-sm mb-2">The Shawshank Redemption</h3>
+                        <div class="flex items-center justify-between">
+                            <span class="text-yellow-400 text-sm">
+                                <i class="fas fa-star mr-1"></i>9.3
+                            </span>
+                            <span class="text-gray-400 text-xs">1994</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- More movie cards would be dynamically generated -->
+            </div>
+
+            <!-- Pagination -->
+            <div class="flex justify-center items-center space-x-4">
+                <button class="bg-netflix-gray hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50" disabled>
+                    <i class="fas fa-chevron-left mr-2"></i>Previous
+                </button>
+                <div class="flex space-x-2">
+                    <button class="bg-netflix-red text-white px-3 py-2 rounded-lg">1</button>
+                    <button class="bg-netflix-gray hover:bg-gray-600 text-white px-3 py-2 rounded-lg transition-colors">2</button>
+                    <button class="bg-netflix-gray hover:bg-gray-600 text-white px-3 py-2 rounded-lg transition-colors">3</button>
+                </div>
+                <button class="bg-netflix-gray hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
+                    Next<i class="fas fa-chevron-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: TopRatedPage -->
+
+    <!-- @COMPONENT: UpcomingPage -->
+    <div id="upcomingPage" class="page-content hidden">
+        <div class="max-w-7xl mx-auto px-4 py-12">
+            <div class="mb-8">
+                <h1 class="text-4xl font-bold mb-4">Upcoming Movies</h1>
+                <p class="text-gray-300 text-lg">Get ready for the latest movies coming to theaters</p>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-8">
+                <!-- Similar movie cards structure -->
+                <div class="movie-card bg-netflix-gray rounded-lg overflow-hidden cursor-pointer transition-transform duration-300">
+                    <!-- Movie poster featuring upcoming blockbuster -->
+                    <img src="https://pixabay.com/get/gea9f81926d6f24fe8d57ffc70d01f8e45abc896e68772a5e6ef12ebafe04a8f237299e134857cfd270dd495d6175beb5869745503768866cf6b12fd4056f29f4_1280.jpg" alt="Upcoming Movie" class="w-full h-64 object-cover">
+                    <div class="p-4">
+                        <h3 class="font-semibold text-sm mb-2">Avatar: The Way of Water</h3>
+                        <div class="flex items-center justify-between">
+                            <span class="text-yellow-400 text-sm">
+                                <i class="fas fa-star mr-1"></i>7.8
+                            </span>
+                            <span class="text-gray-400 text-xs">2024</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- More upcoming movie cards -->
+            </div>
+
+            <!-- Pagination -->
+            <div class="flex justify-center items-center space-x-4">
+                <button class="bg-netflix-gray hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50" disabled>
+                    <i class="fas fa-chevron-left mr-2"></i>Previous
+                </button>
+                <div class="flex space-x-2">
+                    <button class="bg-netflix-red text-white px-3 py-2 rounded-lg">1</button>
+                    <button class="bg-netflix-gray hover:bg-gray-600 text-white px-3 py-2 rounded-lg transition-colors">2</button>
+                </div>
+                <button class="bg-netflix-gray hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
+                    Next<i class="fas fa-chevron-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: UpcomingPage -->
+
+    <!-- @COMPONENT: MovieDetailPage -->
+    <div id="movieDetailPage" class="page-content hidden">
+        <!-- Movie Hero Section -->
+        <div class="relative h-screen">
+            <!-- Movie backdrop featuring cinematic scene -->
+            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://pixabay.com/get/g9747f92866608ac8ab9a8c7aed928801f8ef549a536199458e03e190e42a8f4015fba569d3287dc76f475ce2195f135eadbfb305d9bb2c1cf1348312ee30bcaa_1280.jpg');"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-netflix-black via-transparent to-transparent"></div>
+            <div class="absolute bottom-0 left-0 right-0 p-8">
+                <div class="max-w-7xl mx-auto">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-end">
+                        <!-- Movie Poster -->
+                        <div class="lg:col-span-1">
+                            <!-- Detailed movie poster -->
+                            <img src="https://pixabay.com/get/g087c6ea7ae2885b992193786d1ea4d5827907ef2aae4f848f30c55f0b812acac62617c3ae097135c7d4bb92b3ccb8e37097cb02173b542468c67ad452b6f1537_1280.jpg" alt="Fight Club Poster" class="w-80 rounded-lg shadow-2xl mx-auto lg:mx-0">
+                        </div>
+                        
+                        <!-- Movie Info -->
+                        <div class="lg:col-span-2">
+                            <h1 class="text-6xl font-bold mb-4" data-bind="movie.title">Fight Club</h1>
+                            <div class="flex items-center space-x-6 mb-6">
+                                <div class="flex items-center">
+                                    <i class="fas fa-star text-yellow-400 mr-2"></i>
+                                    <span class="text-2xl font-semibold" data-bind="movie.vote_average">8.8</span>
+                                    <span class="text-gray-400 ml-2">/10</span>
+                                </div>
+                                <span class="text-xl" data-bind="movie.release_date">1999</span>
+                                <span class="text-xl" data-bind="movie.runtime">139 min</span>
+                                <span class="bg-netflix-red px-3 py-1 rounded text-sm font-semibold">R</span>
+                            </div>
+                            <p class="text-xl text-gray-300 mb-8 max-w-3xl" data-bind="movie.overview">
+                                An insomniac office worker and a devil-may-care soap maker form an underground fight club that evolves into an anarchist organization.
+                            </p>
+                            <div class="flex space-x-4">
+                                <button class="bg-netflix-red hover:bg-red-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors">
+                                    <i class="fas fa-play mr-2"></i>Watch Trailer
+                                </button>
+                                <button class="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 px-8 rounded-lg transition-colors">
+                                    <i class="fas fa-plus mr-2"></i>Add to List
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Movie Details Section -->
+        <div class="max-w-7xl mx-auto px-4 py-12">
+            <!-- Additional Info -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+                <div class="lg:col-span-2">
+                    <h2 class="text-2xl font-bold mb-4">Storyline</h2>
+                    <p class="text-gray-300 text-lg leading-relaxed mb-6" data-bind="movie.overview">
+                        An insomniac office worker and a devil-may-care soap maker form an underground fight club that evolves into an anarchist organization, with the narrator being unreliable and the story taking unexpected turns.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <!-- @MAP: movie.genres.map(genre => ( -->
+                        <span class="bg-netflix-gray px-3 py-1 rounded-full text-sm" data-bind="genre.name">Drama</span>
+                        <span class="bg-netflix-gray px-3 py-1 rounded-full text-sm">Thriller</span>
+                        <span class="bg-netflix-gray px-3 py-1 rounded-full text-sm">Action</span>
+                        <!-- @END_MAP )) -->
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Movie Info</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <span class="text-gray-400">Director:</span>
+                            <span class="ml-2">David Fincher</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-400">Writer:</span>
+                            <span class="ml-2">Chuck Palahniuk</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-400">Budget:</span>
+                            <span class="ml-2" data-bind="movie.budget">$63M</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-400">Revenue:</span>
+                            <span class="ml-2" data-bind="movie.revenue">$100.9M</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-400">Language:</span>
+                            <span class="ml-2" data-bind="movie.original_language">English</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cast Section -->
+            <div class="mb-12">
+                <h2 class="text-2xl font-bold mb-6">Cast</h2>
+                <div class="flex space-x-6 overflow-x-auto pb-4">
+                    <!-- @MAP: cast.map(actor => ( -->
+                    <div class="cast-card flex-shrink-0 bg-netflix-gray rounded-lg overflow-hidden w-40 transition-transform duration-300">
+                        <!-- Professional headshot of male actor -->
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300" alt="Brad Pitt" class="w-full h-40 object-cover">
+                        <div class="p-3">
+                            <h4 class="font-semibold text-sm mb-1" data-bind="actor.name">Brad Pitt</h4>
+                            <p class="text-gray-400 text-xs" data-bind="actor.character">Tyler Durden</p>
+                        </div>
+                    </div>
+
+                    <div class="cast-card flex-shrink-0 bg-netflix-gray rounded-lg overflow-hidden w-40 transition-transform duration-300">
+                        <!-- Professional headshot of male actor -->
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300" alt="Edward Norton" class="w-full h-40 object-cover">
+                        <div class="p-3">
+                            <h4 class="font-semibold text-sm mb-1">Edward Norton</h4>
+                            <p class="text-gray-400 text-xs">The Narrator</p>
+                        </div>
+                    </div>
+
+                    <div class="cast-card flex-shrink-0 bg-netflix-gray rounded-lg overflow-hidden w-40 transition-transform duration-300">
+                        <!-- Professional headshot of female actor -->
+                        <img src="https://pixabay.com/get/g0f15bed559003ca3516c717cc2b568c34ab45a98d27914ac7de2625a09516415dbf2beb99a2ce1aa3e4463d8cf2671614779746d6f943857914b32d21372ec2d_1280.jpg" alt="Helena Bonham Carter" class="w-full h-40 object-cover">
+                        <div class="p-3">
+                            <h4 class="font-semibold text-sm mb-1">Helena Bonham Carter</h4>
+                            <p class="text-gray-400 text-xs">Marla Singer</p>
+                        </div>
+                    </div>
+
+                    <div class="cast-card flex-shrink-0 bg-netflix-gray rounded-lg overflow-hidden w-40 transition-transform duration-300">
+                        <!-- Professional headshot of male actor -->
+                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300" alt="Meat Loaf" class="w-full h-40 object-cover">
+                        <div class="p-3">
+                            <h4 class="font-semibold text-sm mb-1">Meat Loaf</h4>
+                            <p class="text-gray-400 text-xs">Robert Paulson</p>
+                        </div>
+                    </div>
+                    <!-- @END_MAP )) -->
+                </div>
+            </div>
+
+            <!-- Back Button -->
+            <button onclick="showPage('home')" class="bg-netflix-gray hover:bg-gray-600 text-white px-6 py-3 rounded-lg transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Movies
+            </button>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: MovieDetailPage -->
+
+    <!-- @COMPONENT: SearchResultsPage -->
+    <div id="searchResultsPage" class="page-content hidden">
+        <div class="max-w-7xl mx-auto px-4 py-12">
+            <div class="mb-8">
+                <h1 class="text-4xl font-bold mb-4">Search Results</h1>
+                <p class="text-gray-300 text-lg">Found <span id="searchResultCount" data-bind="searchResults.length">24</span> results for "<span id="searchQuery" data-bind="query">fight club</span>"</p>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-8">
+                <!-- Search results will have similar structure to other pages -->
+                <!-- Movie cards will be populated dynamically -->
+            </div>
+
+            <!-- Pagination -->
+            <div class="flex justify-center items-center space-x-4">
+                <button class="bg-netflix-gray hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50" disabled>
+                    <i class="fas fa-chevron-left mr-2"></i>Previous
+                </button>
+                <div class="flex space-x-2">
+                    <button class="bg-netflix-red text-white px-3 py-2 rounded-lg">1</button>
+                    <button class="bg-netflix-gray hover:bg-gray-600 text-white px-3 py-2 rounded-lg transition-colors">2</button>
+                </div>
+                <button class="bg-netflix-gray hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
+                    Next<i class="fas fa-chevron-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: SearchResultsPage -->
+
+    <script>
+        // TODO: Implement Redux for state management if experience > 6 months
+        // TODO: Implement TMDB API integration with proper error handling
+        // TODO: Add proper loading states for all API calls
+        
+        (function() {
+            // Navigation functionality
+            function showPage(pageId) {
+                // Hide all pages
+                const pages = document.querySelectorAll('.page-content');
+                pages.forEach(page => page.classList.add('hidden'));
+                
+                // Show selected page
+                const targetPage = document.getElementById(pageId === 'home' ? 'homePage' : pageId + 'Page');
+                if (targetPage) {
+                    targetPage.classList.remove('hidden');
+                    targetPage.classList.add('fade-in');
+                }
+                
+                // Update navigation active states
+                updateNavigation(pageId);
+                
+                // Simulate API call and show content
+                if (pageId === 'home') {
+                    setTimeout(() => {
+                        document.getElementById('loadingState').classList.add('hidden');
+                        document.getElementById('moviesGrid').classList.remove('hidden');
+                    }, 1500);
+                }
+            }
+            
+            function updateNavigation(activePageId) {
+                // Desktop navigation
+                const navLinks = document.querySelectorAll('.nav-link');
+                navLinks.forEach(link => {
+                    link.classList.remove('text-white');
+                    link.classList.add('text-gray-300');
+                });
+                
+                // Mobile navigation
+                const mobileNavLinks = document.querySelectorAll('.nav-link-mobile');
+                mobileNavLinks.forEach(link => {
+                    link.classList.remove('text-white');
+                    link.classList.add('text-gray-300');
+                });
+                
+                // Set active link
+                const pageMap = {
+                    'home': 0,
+                    'top-rated': 1,
+                    'upcoming': 2
+                };
+                
+                if (pageMap.hasOwnProperty(activePageId)) {
+                    navLinks[pageMap[activePageId]].classList.remove('text-gray-300');
+                    navLinks[pageMap[activePageId]].classList.add('text-white');
+                    mobileNavLinks[pageMap[activePageId]].classList.remove('text-gray-300');
+                    mobileNavLinks[pageMap[activePageId]].classList.add('text-white');
+                }
+            }
+            
+            function toggleMobileMenu() {
+                const mobileMenu = document.getElementById('mobileMenu');
+                mobileMenu.classList.toggle('hidden');
+            }
+            
+            function handleSearch(event) {
+                if (event.key === 'Enter') {
+                    const query = event.target.value.trim();
+                    if (query) {
+                        // TODO: Implement actual search API call
+                        document.getElementById('searchQuery').textContent = query;
+                        showPage('searchResults');
+                    }
+                }
+            }
+            
+            function showMovieDetail(movieId) {
+                // TODO: Fetch movie details from TMDB API
+                showPage('movieDetail');
+            }
+            
+            // Make functions globally available
+            window.showPage = showPage;
+            window.toggleMobileMenu = toggleMobileMenu;
+            window.handleSearch = handleSearch;
+            window.showMovieDetail = showMovieDetail;
+            
+            // Initialize the app
+            showPage('home');
+            
+            // Simulate initial load
+            setTimeout(() => {
+                document.getElementById('loadingState').classList.add('hidden');
+                document.getElementById('moviesGrid').classList.remove('hidden');
+            }, 2000);
+        })();
+    </script>
+</body>
+</html>
