@@ -1,8 +1,8 @@
-# Project Documentation
+# CineHub - Movie Database Application
 
 ## Overview
 
-This project appears to be a web application, but specific details about its purpose and functionality cannot be determined without access to the repository contents. The project structure and implementation details need to be analyzed once the codebase is available.
+A comprehensive React.js movie database application featuring five pages, search functionality, and full TMDB API integration. Built with Redux state management, TypeScript, and modern web technologies following the specifications from the provided PDF requirements.
 
 ## User Preferences
 
@@ -10,24 +10,44 @@ Preferred communication style: Simple, everyday language.
 
 ## System Architecture
 
-The system architecture cannot be determined without access to the repository contents. Key areas to analyze once available include:
+### Frontend Architecture
+- **Framework**: React 18 with TypeScript for type safety
+- **State Management**: Redux Toolkit with organized slices
+- **Routing**: Wouter for lightweight client-side routing
+- **Styling**: Tailwind CSS with Shadcn/UI components
+- **Build Tool**: Vite for fast development and optimized builds
 
-- **Frontend Framework**: Technology stack and UI architecture
-- **Backend Framework**: Server-side implementation approach
-- **Database Design**: Data storage and management strategy
-- **Authentication**: User management and security implementation
-- **API Design**: Service layer and endpoint structure
+### API Integration
+- **External API**: TMDB (The Movie Database) API integration
+- **Service Layer**: Organized API services with proper error handling
+- **Environment**: VITE_TMDB_API_KEY for secure API key management
+
+### Pages Structure
+- **Home**: Popular movies with pagination
+- **Search Results**: Movie search functionality
+- **Movie Details**: Complete movie info with cast details
+- **Top Rated**: Highest-rated movies
+- **Upcoming**: Upcoming movie releases
 
 ## External Dependencies
 
-External dependencies and integrations cannot be identified without access to package configuration files, environment variables, and source code. Common areas to document include:
+### Core Dependencies
+- **React & Redux**: `react`, `react-dom`, `@reduxjs/toolkit`, `react-redux`
+- **TypeScript**: `typescript` for type safety
+- **Routing**: `wouter` for lightweight client-side routing
+- **Styling**: `tailwindcss`, `@tailwindcss/typography`, `tailwindcss-animate`
+- **UI Components**: `@radix-ui` components, `lucide-react` icons
+- **Build Tools**: `vite`, `@vitejs/plugin-react`
 
-- **Package Dependencies**: Third-party libraries and frameworks
-- **Database Services**: Data storage solutions
-- **Authentication Providers**: Identity management services
-- **API Integrations**: External service connections
-- **Deployment Services**: Hosting and infrastructure providers
+### API Integration
+- **TMDB API**: The Movie Database API for movie data
+- **Environment Variable**: `VITE_TMDB_API_KEY` (user-provided secret)
+
+### Development Tools
+- **Package Manager**: npm with package-lock.json
+- **Development Server**: Vite dev server on port 3000
+- **Type Checking**: TypeScript with strict configuration
 
 ---
 
-*Note: This documentation requires updating once repository contents are accessible for proper analysis.*
+*Last updated: August 15, 2025 - Project completed and ready for GitHub deployment*
